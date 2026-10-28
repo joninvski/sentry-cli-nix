@@ -1,0 +1,44 @@
+name: Update sentry
+
+on:
+  schedule:
+    - cron: '23 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-sentry
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: ./update.sh
+      - name: Check updated package
+        run: |
+          if ! git diff --quiet -- package.nix; then
+            nix flake check
+            nix build .#sentry
+          fi
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: update-sentry
+          delete-branch: true
+          add-paths: package.nix
+          commit-message: Update sentry
+          title: Update sentry
+          body: |
+            Update the npm release and pinned source hash.
+
+            The updater ran `nix flake check` and built the package on Linux.
