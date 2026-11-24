@@ -8,11 +8,11 @@
 
 stdenvNoCC.mkDerivation rec {
   pname = "sentry";
-  version = "0.47.0";
+  version = "0.51.0";
 
   src = fetchurl {
     url = "https://registry.npmjs.org/sentry/-/sentry-${version}.tgz";
-    hash = "sha256-jyqt+h8EYJKF9XbOq3e11XQ9XSFugvnjor9bIddNkoo=";
+    hash = "sha256-bY04KNAd4Q8NLb1LZeGq3xg1En2cFcmGDiwFUp9EHBY=";
   };
 
   nativeBuildInputs = [ makeWrapper ];
